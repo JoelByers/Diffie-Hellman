@@ -2,8 +2,18 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "fastmodexpon.h"
+#include <time.h>
+#include <cstdlib>
+#include <cstring>
 
 using namespace std;
+
+struct DiffieHellmanServerData{
+    int base;
+    int mod;
+    int serverResult;
+};
 
 int main(){
 
@@ -39,35 +49,45 @@ int main(){
 
     // TODO: Choose public base and mod
 
+    int mod = randPrime();
+    int base = 3;
     // TODO: Choose a Server secret number
+    srand(time(0));
+    int serverSecret = rand() % 50;
 
     // TODO: Raise base to secret number
     
+    int serverResult = FastModExpon(base, serverSecret, mod);
+
     // TODO: Send to client
+    DiffieHellmanServerData data;
+    data.base = base;
+    data.mod = mod;
+    data.serverResult = serverResult;
 
-    // if( send(socket_description , &data, strlen(client_message) , 0) < 0)
-	// {
-	// 	cout << "Unable to send message to server";
-	// 	return 1;
-	// }
+    cout << "Sending modulus, base, and server result to Client...\n";
+    if( send(new_socket , &data, sizeof(data), 0) < 0)
+	{
+		cout << "Unable to send server data to client";
+		return 1;
+	}
+    cout << "Sent, waiting on client result\n";
 
-    // TODO: Wait for client response
+    // Wait for client response
+    int clientResult = -1;
 
-    // int read_size;
-    // while((read_size = recv(new_socket, client_message, 100, 0)) > 0){
-    // }
+    recv(new_socket, &clientResult, sizeof(clientResult), 0) > 0;
 
+    cout << clientResult;
+
+    cout << "Received result from Client...\n";
     // TODO: Raise base to client response
-
-    // if(read_size == 0){
-    //     cout << "Client disconnected" << endl;
-    // }
-    // else if(read_size == -1){
-    //     cout << "Server could not receive message from client" << endl;
-    //     return 1;
-    // }
-
+    int privateKey = FastModExpon(clientResult, serverSecret, mod);
+    cout << "Private Key: " << privateKey << endl;
+    
     close(socket_description);
+
+    cout << "Private Key: " << privateKey;
 
     return 0;
 }
