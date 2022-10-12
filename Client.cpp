@@ -4,6 +4,7 @@
 #include <cstring>
 #include "fastmodexpon.h"
 #include <unistd.h>
+#include "SDES.h"
 
 using namespace std;
 
@@ -67,8 +68,23 @@ int main(){
 
     // Raise Server result to Client secret number
     int privateKey = FastModExpon(serverData.serverResult, clientSecret, serverData.mod);
+    bool key[10] = {0,0,0,0,0,0,0,0,0,0};
+    asciiToBinary((char)privateKey, key);
+
     cout << "Private Key: " << privateKey << endl;
 
+    bool encryptedBytes[100][8] = {{}};
+    recv(socket_description, &encryptedBytes, sizeof(encryptedBytes), 0);
+
+    // Decrypt
+    string message;
+    for(int i = 0; i < 100; i++){
+        decrypt(encryptedBytes[i], key);
+        char c = binaryToChar(encryptedBytes[i]);
+        message.push_back(c);
+    }
+
+    cout << message;
     close(socket_description);
 
     return 0;

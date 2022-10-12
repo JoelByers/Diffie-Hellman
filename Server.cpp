@@ -6,6 +6,7 @@
 #include <time.h>
 #include <cstdlib>
 #include <cstring>
+#include "SDES.h"
 
 using namespace std;
 
@@ -78,8 +79,6 @@ int main(){
 
     recv(new_socket, &clientResult, sizeof(clientResult), 0) > 0;
 
-    cout << clientResult;
-
     cout << "-------------------------------------\n";
     cout << "Base          : " << base << "\n";
     cout << "Mod           : " << mod << "\n";
@@ -91,8 +90,44 @@ int main(){
     cout << "Received result from Client...\n";
     // Raise base to client response
     int privateKey = FastModExpon(clientResult, serverSecret, mod);
+    bool key[10] = {0,0,0,0,0,0,0,0,0,0};
+    asciiToBinary((char)privateKey, key);
+
+    // for(int i = 0; i < 10; i++){
+    //     cout << key[i];
+    // }
+    // cout << endl << endl;;
+
     cout << "Private Key: " << privateKey << endl;
+
+    cout << "Enter a message to send securely (< 100 chars): ";
+    string message;
+    getline(cin,message);
+
+    char messageAry[100] = {};
+    strcpy(messageAry, message.c_str());
+    bool encryptedBytes[100][8] = {{}};
     
+    for(int i = 0; i < message.length(); i++){
+        bool charBits[8] = {0,0,0,0,0,0,0,0};
+        asciiToBinary(messageAry[i], charBits);
+        for(int j = 0; j < 8; j++){
+            encryptedBytes[i][j] = charBits[j];
+        }
+
+        encrypt(charBits,key);
+
+        for(int j = 0; j < 8; j++){
+            encryptedBytes[i][j] = charBits[j];
+        }
+    }
+
+    if(send(new_socket , &encryptedBytes, sizeof(encryptedBytes), 0) < 0)
+	{
+		cout << "Unable to send server data to client";
+		return 1;
+	}
+
     close(socket_description);
 
     return 0;
