@@ -47,19 +47,19 @@ int main(){
         return 1;
     }
 
-    // TODO: Choose public base and mod
+    // Choose public base and mod
 
     int mod = randPrime();
     int base = 3;
-    // TODO: Choose a Server secret number
+    // Choose a Server secret number
     srand(time(0));
     int serverSecret = rand() % 50;
 
-    // TODO: Raise base to secret number
+    // Raise base to secret number
     
     int serverResult = FastModExpon(base, serverSecret, mod);
 
-    // TODO: Send to client
+    // Send to client
     DiffieHellmanServerData data;
     data.base = base;
     data.mod = mod;
@@ -80,14 +80,20 @@ int main(){
 
     cout << clientResult;
 
+    cout << "-------------------------------------\n";
+    cout << "Base          : " << base << "\n";
+    cout << "Mod           : " << mod << "\n";
+    cout << "Server Secret : " << serverSecret << "\n";
+    cout << "Server Result : " << serverResult << "\n";
+    cout << "Client Result : " << clientResult << "\n";
+    cout << "-------------------------------------\n";
+
     cout << "Received result from Client...\n";
-    // TODO: Raise base to client response
+    // Raise base to client response
     int privateKey = FastModExpon(clientResult, serverSecret, mod);
     cout << "Private Key: " << privateKey << endl;
     
     close(socket_description);
-
-    cout << "Private Key: " << privateKey;
 
     return 0;
 }

@@ -33,7 +33,7 @@ int main(){
 	}
 
     cout << "Connected to Server...\n";
-    // TODO: Wait for Server to send public base, mod, and base raised to secret
+    // Wait for Server to send public base, mod, and base raised to secret
 
     DiffieHellmanServerData serverData;
 
@@ -46,30 +46,29 @@ int main(){
     int clientSecret = rand() % 50;
 
     // Raise Client secret number to base and mod
-    int clientResult =  FastModExpon(serverData.base, clientSecret, serverData.mod);
+    int clientResult = FastModExpon(serverData.base, clientSecret, serverData.mod);
 
+    cout << "Received data from Server...\n";
     cout << "-------------------------------------\n";
     cout << "Base          : " << serverData.base << "\n";
     cout << "Mod           : " << serverData.mod << "\n";
     cout << "Client Secret : " << clientSecret << "\n";
-    cout << "Client Result : " << clientResult << "\n";
     cout << "Server Result : " << serverData.serverResult << "\n";
+    cout << "Client Result : " << clientResult << "\n";
     cout << "-------------------------------------\n";
 
     // Send Client result to Server
     cout << "Sending result to Server...\n";
-  
-    if(send(socket_description , &clientResult, sizeof(clientResult), 0) < 0)
+    if(send(socket_description , &clientResult, sizeof(clientResult) , 0) < 0)
 	{
 		cout << "Unable to send client data to server" << endl;
 		return 1;
 	}
 
-    // TODO: Raise Server result to Client secret number
+    // Raise Server result to Client secret number
     int privateKey = FastModExpon(serverData.serverResult, clientSecret, serverData.mod);
-    cout << "Private Key: " << privateKey;
+    cout << "Private Key: " << privateKey << endl;
 
-    // Not sure if this is needed
     close(socket_description);
 
     return 0;
