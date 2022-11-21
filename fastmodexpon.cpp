@@ -2,8 +2,6 @@
 #include <string>
 #include <fstream>
 #include <time.h>
-#include <fastmodexpon.h>
-
 
 using namespace std;
 int randPrime(){
@@ -11,7 +9,7 @@ int randPrime(){
     int random;
     int counter = 0;
     srand(time(NULL));
-    random = rand() % 1000 + 1;
+    random = rand() % 25 + 1;
     ifstream inFile("primes.txt");
     while(inFile >> tempstr){
         if(counter == random){
