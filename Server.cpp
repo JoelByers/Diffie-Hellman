@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 #include "SDES.h"
+#include "DiffieHellman.h"
 
 using namespace std;
 
@@ -48,55 +49,11 @@ int main(){
         return 1;
     }
 
-    // Choose public base and mod
+    DiffieHellman diffieHellman(new_socket);
+    diffieHellman.serverGetPrivateKey();
 
-    int mod = randPrime();
-    int base = 3;
-    // Choose a Server secret number
-    srand(time(0));
-    int serverSecret = rand() % 50;
-
-    // Raise base to secret number
-    
-    int serverResult = FastModExpon(base, serverSecret, mod);
-
-    // Send to client
-    DiffieHellmanServerData data;
-    data.base = base;
-    data.mod = mod;
-    data.serverResult = serverResult;
-
-    cout << "Sending modulus, base, and server result to Client...\n";
-    if( send(new_socket , &data, sizeof(data), 0) < 0)
-	{
-		cout << "Unable to send server data to client";
-		return 1;
-	}
-    cout << "Sent, waiting on client result\n";
-
-    // Wait for client response
-    int clientResult = -1;
-
-    recv(new_socket, &clientResult, sizeof(clientResult), 0) > 0;
-
-    cout << "-------------------------------------\n";
-    cout << "Base          : " << base << "\n";
-    cout << "Mod           : " << mod << "\n";
-    cout << "Server Secret : " << serverSecret << "\n";
-    cout << "Server Result : " << serverResult << "\n";
-    cout << "Client Result : " << clientResult << "\n";
-    cout << "-------------------------------------\n";
-
-    cout << "Received result from Client...\n";
-    // Raise base to client response
-    int privateKey = FastModExpon(clientResult, serverSecret, mod);
     bool key[10] = {0,0,0,0,0,0,0,0,0,0};
-    asciiToBinary((char)privateKey, key);
-
-    // for(int i = 0; i < 10; i++){
-    //     cout << key[i];
-    // }
-    // cout << endl << endl;;
+    asciiToBinary((char)diffieHellman.getPrivateKey(), key);
 
     cout << "Private Key: " << privateKey << endl;
 
