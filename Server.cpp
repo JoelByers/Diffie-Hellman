@@ -11,12 +11,6 @@
 
 using namespace std;
 
-struct DiffieHellmanServerData{
-    int base;
-    int mod;
-    int serverResult;
-};
-
 int main(){
 
     // create socket
@@ -55,7 +49,7 @@ int main(){
     bool key[10] = {0,0,0,0,0,0,0,0,0,0};
     asciiToBinary((char)diffieHellman.getPrivateKey(), key);
 
-    cout << "Private Key: " << privateKey << endl;
+    cout << "Private Key: " << diffieHellman.getPrivateKey() << endl;
 
     cout << "Enter a message to send securely (< 100 chars): ";
     string message;
