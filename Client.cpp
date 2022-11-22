@@ -33,22 +33,22 @@ int main(){
     DiffieHellman diffieHellman(socket_description);
     diffieHellman.clientGetPrivateKey();
     bool key[10] = {0,0,0,0,0,0,0,0,0,0};
-    asciiToBinary((char)diffieHellman.getPrivateKey(), key);
+    asciiToBinary(diffieHellman.getPrivateKey(), key);
 
     cout << "Private Key: " << diffieHellman.getPrivateKey() << endl;
 
-    bool encryptedBytes[100][8] = {{}};
+    bool encryptedBytes[100][8] = {};
     recv(socket_description, &encryptedBytes, sizeof(encryptedBytes), 0);
 
     // Decrypt
-    string message;
+    char message[100];
     for(int i = 0; i < 100; i++){
         decrypt(encryptedBytes[i], key);
         char c = binaryToChar(encryptedBytes[i]);
-        message.push_back(c);
+        message[i] = c;
     }
 
-    cout << message;
+    cout << message << endl;
     close(socket_description);
 
     return 0;

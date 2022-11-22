@@ -59,7 +59,8 @@ int main(){
     strcpy(messageAry, message.c_str());
     bool encryptedBytes[100][8] = {{}};
     
-    for(int i = 0; i < message.length(); i++){
+    // length + 1 for null terminator
+    for(int i = 0; i < message.length() + 1; i++){
         bool charBits[8] = {0,0,0,0,0,0,0,0};
         asciiToBinary(messageAry[i], charBits);
         for(int j = 0; j < 8; j++){
